@@ -110,6 +110,56 @@ chmod +x scripts/install.sh
 .\scripts\install.ps1 -All
 ```
 
+### 更新本地 Skill
+
+本仓库更新后，**已安装的 Skill 不会自动同步**，需手动拉代码并重新安装（安装脚本会先删除旧目录再复制，等同于覆盖更新）。
+
+**用户级（Cursor / Codex / Claude）— 三步：**
+
+```bash
+cd /path/to/rustsilk-skill
+git pull origin main
+
+# 与首次安装相同；装过三平台的用 --all
+./scripts/install.sh --all
+```
+
+```powershell
+cd D:\path\to\rustsilk-skill
+git pull origin main
+.\scripts\install.ps1 -All
+```
+
+完成后 **重启 Cursor / 重新加载窗口**（Codex、Claude 同理），让 Agent 重新索引 Skill。
+
+**只更新某一平台：**
+
+| 平台 | 命令 |
+|------|------|
+| 仅 Cursor | `./scripts/install.sh --cursor` 或 `.\scripts\install.ps1` |
+| 仅 Codex | `./scripts/install.sh --codex` 或 `.\scripts\install.ps1 -Target Codex` |
+| 仅 Claude | `./scripts/install.sh --claude` 或 `.\scripts\install.ps1 -Target Claude` |
+
+**项目级（`.cursor/skills/`）：**
+
+```bash
+git pull origin main
+./scripts/install.sh --project
+# 若 .cursor/skills/ 有变更，提交到 git 供团队拉取
+git add .cursor/skills && git commit -m "chore: update project skills"
+```
+
+**说明：**
+
+- 更新 Skill **不需要**重新跑 `sync-vendor-sources.sh`；vendor 缓存与 Skill 文本是独立的，见 [什么时候才需要手动执行 sync？](#什么时候才需要手动执行-sync)。
+- 若只关心某一个 Skill，也可只复制对应目录（见下方「只安装某一个 Skill」）。
+
+**一行速记：**
+
+```bash
+cd rustsilk-skill && git pull && ./scripts/install.sh --all
+```
+
 ### 手动安装
 
 ```bash

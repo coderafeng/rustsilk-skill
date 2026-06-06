@@ -10,12 +10,12 @@
 
 ## Skill 列表
 
-| Skill 名称 | 目录 | 适用框架 | 典型触发词 | 功能描述 |
-|------------|------|----------|------------|----------|
-| `rustsilk-easy-query` | [rustsilk-skill-easy-query](./rustsilk-skill-easy-query/) | [easy-query](https://github.com/dromara/easy-query) | `eq`、`easy-query`、`selectAutoInclude`、`include`、`toSQLResult` | easy-query ORM 专家：强类型 DSL、`EasyEntityQuery`、DTO/`selectAutoInclude`、多层级 `include`、SQL 预览与 `JdbcExecutorListener`、`asTreeCTE` 树查询、代理模式/`@EntityProxy`/`sql-processor`、Spring Boot 方言配置、Proxy 编译故障、IDEA 插件。 |
-| `rustsilk-mybatis-plus` | [rustsilk-skill-mybatis-plus](./rustsilk-skill-mybatis-plus/) | [MyBatis-Plus](https://github.com/baomidou/mybatis-plus) + [MPJ](https://github.com/yulichang/mybatis-plus-join) | `MP`、`MPJ`、`baomidou`、`selectJoinList`、`MPJLambdaWrapper` | MyBatis-Plus 与 MyBatis-Plus-Join 专家：`BaseMapper`/`IService`、`LambdaQueryWrapper`/`Wrappers`、分页插件、`MPJBaseMapper`、`JoinWrappers`、连表 `selectJoinList`/`selectJoinPage`、`selectCollection`/`selectAssociation`、SQL 日志/`getSqlSegment`、starter 与 jsqlparser 依赖、连表 DTO 与报错排查。 |
+| Skill | 典型触发词 | 功能描述 |
+|-------|------------|----------|
+| `rustsilk-easy-query` | `eq`、`easy-query`、`selectAutoInclude`、`include`、`toSQLResult` | easy-query ORM：DSL、`EasyEntityQuery`、DTO/结构化返回、SQL 预览、`asTreeCTE`、代理/`@EntityProxy`/`sql-processor`、Spring Boot 配置与排错。 |
+| `rustsilk-mybatis-plus` | `MP`、`MPJ`、`baomidou`、`selectJoinList`、`MPJLambdaWrapper` | MyBatis-Plus + MPJ：Wrapper、分页、`MPJBaseMapper`、连表与 `selectCollection`、SQL 日志、starter/jsqlparser、连表 DTO 与排错。 |
 
-> 新增 Skill 时：创建 `rustsilk-skill-<主题>/`，并在上表追加一行。
+> 源码目录：`rustsilk-skill-<主题>/`。新增 Skill 时创建对应子目录并追加一行。
 
 ### 如何选择 Skill
 
@@ -34,6 +34,15 @@
 ```
 rustsilk-skill/
 ├── README.md
+├── vendor/
+│   ├── versions.json           # 保留版本清单（入库）
+│   ├── README.md
+│   └── <framework>/<version>/  # sync 生成，gitignore
+├── scripts/
+│   ├── install.sh
+│   ├── install.ps1
+│   ├── sync-vendor-sources.sh   # Maven sources → vendor/
+│   └── scan-pom-versions.py     # 扫描 pom 更新 versions.json
 ├── rustsilk-skill-easy-query/
 │   ├── SKILL.md
 │   └── references/
@@ -56,9 +65,6 @@ rustsilk-skill/
 │       ├── sql-preview-and-testing.md
 │       └── troubleshooting.md
 └── rustsilk-skill-xxx/          # 后续 Skill（预留）
-├── scripts/
-│   ├── install.sh               # 一键安装（Bash）
-│   └── install.ps1              # 一键安装（PowerShell）
 ```
 
 ---
@@ -151,22 +157,136 @@ cp -r rustsilk-skill-mybatis-plus ~/.cursor/skills/rustsilk-mybatis-plus
 
 ## 源码查证与版本说明
 
-本仓库 **Skill 文本** 与 **框架上游源码** 是两层概念：
+### 版本从哪来（Agent 自动，无需长描述）
 
-| 层级 | 是否自动跟踪 GitHub 最新 | 说明 |
-|------|--------------------------|------|
-| **rustsilk-skill 仓库** | 否 | Skill 内容随本仓库 git 更新；改 Skill 需 pull / 重新执行安装脚本 |
-| **框架源码（回答依据）** | 可指向 GitHub 默认分支 | Skill 要求 Agent 优先查官方 GitHub / 文档，而非臆造 API |
+| 情况 | 版本来源 |
+|------|----------|
+| 用户写了版本号 | 用该版本 |
+| 未写版本，工作区有 `pom.xml` | **扫描工作区所有 pom**（含子模块、`dependencyManagement`、`* .version` 属性） |
+| 空白项目、无 pom | **GitHub 默认分支 / 最新 Release** + 官方文档 |
 
-各 Skill 的 **Source Priority** 已配置为 GitHub 仓库（例如 [dromara/easy-query](https://github.com/dromara/easy-query) 的 `main` 分支、`sql-test/` 模块）。Agent 在具备网络或已 clone 源码到工作区时，应以 **GitHub 上对应分支的最新代码与测试** 为准核对 API。
+有版本后查证顺序：`vendor/` → `.m2` sources → GitHub **tag**（非 main）→ 文档。
 
-**实践建议：**
+> **是否需要先跑 sync？** 日常提问**不需要**；仅在你想预缓存 `vendor/` 或维护 `versions.json` 时才手动执行，详见 [什么时候才需要手动执行 sync？](#什么时候才需要手动执行-sync)。
 
-1. **一般使用** — 安装 Skill 即可；提问时附上 `pom.xml` 中的框架版本，Agent 结合官方文档回答。
-2. **需要对齐最新未发布 API** — 将框架仓库 clone 到本地并放入 Cursor 工作区，或让 Agent 通过 GitHub 查阅 `main` 分支；提问中说明「请以 GitHub main 为准」。
-3. **版本敏感** — 务必提供 easy-query / MP / MPJ 的版本号；Skill 不会替用户锁定「永远等于 Maven Central 最新版」。
+### easy-query 日常 artifacts（Spring Boot）
 
-**说明：** Skill 本身不包含框架源码，也**不会**自动 `git pull` 上游仓库；若团队需要固定某一 tag 的源码对照，请在业务项目中 submodule 或 clone 指定 tag，并在对话中声明版本。
+业务 pom 常见写法：
+
+```xml
+<dependency>
+  <groupId>com.easy-query</groupId>
+  <artifactId>sql-springboot4-starter</artifactId>
+</dependency>
+<dependency>
+  <groupId>com.easy-query</groupId>
+  <artifactId>sql-processor</artifactId>
+  <scope>provided</scope>
+</dependency>
+```
+
+| artifactId | 作用 |
+|------------|------|
+| `sql-springboot4-starter` | Spring Boot 4 集成（**日常主依赖**） |
+| `sql-springboot-starter` | Spring Boot 2/3 |
+| `sql-processor` | APT 生成 `@EntityProxy`（provided） |
+| `sql-api-proxy` | 代理 DSL API（starter 会传递，vendor 仍单独拉 sources 便于查阅） |
+| `sql-core` | 核心实现（**已在 starter 传递依赖中**；查底层实现时可额外 sync） |
+
+`vendor/versions.json` 默认 artifacts 为 Boot4 场景；Boot3 用 `--profile springBoot3`。
+
+---
+
+## sync-vendor-sources.sh 使用说明
+
+从 Maven Central 下载 `*-sources.jar` 解压到 `vendor/<framework>/<version>/`（**不入 git**）。
+
+### 什么时候才需要手动执行 sync？
+
+**结论：日常用 Skill 提问时，不需要手动 sync。**
+
+Agent 回答问题时**不会**自动运行 sync，也**不会**要求你每次提问前先执行 sync。它会按 [源码查证与版本说明](#源码查证与版本说明) 中的顺序自行查源码：`vendor/`（若本地已有）→ 本机 `.m2` sources → GitHub **tag** → 官方文档。
+
+| 场景 | 是否需要手动 sync | 说明 |
+|------|:-----------------:|------|
+| 在业务项目里日常问 eq / MP 问题 | **否** | 工作区有 `pom.xml` 时 Agent 自动读版本；无 `vendor/` 也能从 `.m2` 或 GitHub 查证 |
+| 预缓存常用版本，加快离线或重复查证 | 可选 | 将 sources 落到 `vendor/`，减少反复从 Maven Central 下载 |
+| 项目升级依赖后，希望 `vendor/` 与 pom 对齐 | **是** | 见下方 `--scan-pom . --update-manifest` |
+| 维护 rustsilk-skill 仓库、更新 `versions.json` | **是** | 扫业务 pom，或 `--fallback-github` 填默认版本 |
+| 本机 `.m2` 无 sources、网络不稳定 | 可选 | 提前 sync 到 `vendor/` 可提高查证稳定性 |
+| 需查 `sql-core` 等未进默认 artifacts 的底层包 | 可选 | 单版本 sync，或扩展 `versions.json` 后全量 sync |
+
+补充说明：
+
+- **`vendor/versions.json` 是预缓存清单，不是白名单。** 未写入 json 的版本仍可被 Agent 查证（通过 pom 版本 + `.m2` / GitHub tag）。
+- **sync 属于维护/加速操作**，不是 Agent 工作流的一步；安装 Skill 后即可直接提问，无需额外配置 vendor。
+
+### 前置
+
+- 已安装 **Maven**、**Python 3**、**unzip**
+- 建议在 **rustsilk-skill 仓库根目录** 执行
+
+```bash
+chmod +x scripts/sync-vendor-sources.sh scripts/scan-pom-versions.py
+```
+
+### 常用命令
+
+| 场景 | 命令 |
+|------|------|
+| 按 `versions.json` 全量同步 | `./scripts/sync-vendor-sources.sh` |
+| **推荐：扫业务项目 pom 并更新 json** | `./scripts/sync-vendor-sources.sh --scan-pom /path/to/你的Java项目 --update-manifest` |
+| 在当前目录扫 pom（Cursor 工作区根） | `./scripts/sync-vendor-sources.sh --scan-pom . --update-manifest` |
+| 无 pom 时用 GitHub 最新 Release 填 json | `./scripts/sync-vendor-sources.sh --scan-pom . --update-manifest --fallback-github` |
+| Spring Boot 3 的 eq starter | `./scripts/sync-vendor-sources.sh --profile springBoot3` |
+| 单版本临时缓存（不在 json 里） | `./scripts/sync-vendor-sources.sh --framework easy-query --version 3.2.7 --no-prune` |
+| easy-query 额外拉 `sql-test` | `./scripts/sync-vendor-sources.sh --with-git-tests` |
+
+### 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| `--scan-pom [DIR]` | 递归扫描 DIR 下所有 `pom.xml`（跳过 `target/`） |
+| `--update-manifest` | 将扫到的版本**合并写入** `vendor/versions.json`（新的在前，保留 `retainCount` 个） |
+| `--fallback-github` | 扫不到 pom 时，从 GitHub Releases 取最新版写入 json |
+| `--profile springBoot3\|springBoot4` | 使用 `versions.json` 里 `artifactsAlt` 的 starter 组合 |
+| `--framework` / `--version` | 只同步指定框架的单个版本 |
+| `--no-prune` | 不删除 json 外的旧 vendor 目录 |
+| `--with-git-tests` | easy-query 额外 sparse clone `sql-test` |
+
+### 推荐工作流（需要手动 sync 时）
+
+以下适用于 [上表](#什么时候才需要手动执行-sync) 中标注为「是」或「可选」的场景，**不是**日常提问的前置步骤。
+
+**在 Java 业务仓库里开发时**（Cursor 工作区 = 业务项目）：
+
+```bash
+/path/to/rustsilk-skill/scripts/sync-vendor-sources.sh --scan-pom . --update-manifest
+```
+
+**维护 rustsilk-skill 本身、无业务 pom 时**：
+
+```bash
+./scripts/sync-vendor-sources.sh --scan-pom . --update-manifest --fallback-github
+```
+
+合并进 `versions.json` 后若需提交：
+
+```bash
+git add vendor/versions.json && git commit -m "chore(vendor): sync framework versions from pom scan"
+```
+
+### 输出目录示例
+
+```
+vendor/easy-query/3.2.10/
+├── sql-api-proxy/          # 解压后的 Java 源码
+├── sql-springboot4-starter/
+├── sql-processor/
+└── git-sql-test/sql-test/  # 仅 --with-git-tests
+```
+
+更多见 [vendor/README.md](./vendor/README.md)。
 
 ---
 
@@ -182,24 +302,21 @@ Skill 由 Agent **自动触发**，一般无需手动 `@` 引用。
 
 **easy-query**
 
-- Spring Boot 里 `easy-query.database` 怎么配？启动报方言未选择。
-- `selectAutoInclude` 和 `include` 有什么区别？为什么 `toSQLResult` 看不到 include 的 SQL？
-- `@EntityProxy` 编译后 proxy 包不存在怎么排查？
+- easy-query 3.2.8，`selectAutoInclude` 和 `include` 有什么区别？
+- Spring Boot 启动报 `Please select the correct database dialect`
+- `@EntityProxy` 编译后 proxy 包不存在
 
 **MyBatis-Plus / MPJ**
 
-- Mapper 要继承 `MPJBaseMapper` 吗？`selectJoinList` 怎么用？
-- 一对多连表返回嵌套 List，用 `selectCollection` 怎么写？
-- `getSqlSegment()` 为什么不是完整 SQL？开发环境怎么打印 SQL？
+- MPJ 1.5.7，`selectCollection` 一对多怎么写？
+- `selectJoinList` 报错，Mapper 要继承什么？
+- 开发环境怎么打印 SQL？
 
 ### 触发建议
 
-版本敏感问题请补充：
+带上 **框架名 + 场景** 即可；有 `pom.xml` 在 workspace 里时 Agent 会自己读版本。
 
-- **框架版本**（如 easy-query 3.2.x、MP 3.5.16、MPJ 1.5.7）
-- **Spring Boot 版本**（2 / 3 / 4）
-- **数据库类型**（MySQL、PostgreSQL 等）
-- **easy-query 专属**：是否代理模式、是否 IDEA 插件
+版本敏感时可顺带写版本号，例如 `easy-query 3.2.8` 或 `MP 3.5.16`，**不必**说明 vendor / sources 用法。
 
 ### 验证 Skill 是否生效
 

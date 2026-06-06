@@ -20,10 +20,17 @@ description: >
 
 ## Source Priority（回答前按序查证）
 
-1. **easy-query 主源码与测试** — [github.com/dromara/easy-query](https://github.com/dromara/easy-query) 默认分支（`main`），优先查 `sql-test/` 模块；用户未指定版本时以 GitHub 最新源码与测试为准，并提醒与本地 pom 版本可能不一致
-2. **easy-query-doc** — 公开 URL：`https://www.easy-query.com/easy-query-doc/`
-3. **easy-query-plugin** — [github.com/dromara/easy-query](https://github.com/dromara/easy-query) 仓库内插件与文档
-4. **IntelliJ 插件** — 仅当问题明确涉及 IDE/插件
+用户提到版本号，或工作区 `pom.xml` / 依赖可读出版本时，**按该版本**向下查找，无需用户额外说明「用 vendor」：
+
+1. **`vendor/<framework>/<version>/`** — 若本仓库已 sync（见 [vendor/versions.json](../../vendor/versions.json)）
+2. **`~/.m2/.../{artifactId}-{version}-sources.jar`** — 无则建议 `mvn dependency:get -Dartifact=...:jar:sources`
+3. **GitHub 对应 tag**（非 main）— [dromara/easy-query](https://github.com/dromara/easy-query) 的 `sql-test/`
+4. **easy-query-doc** — https://www.easy-query.com/easy-query-doc/
+5. **插件** — 仅 IDE/插件问题时
+
+**版本不在 `versions.json` 中**：正常，json 只是预缓存列表；继续步骤 2、3，勿要求用户先改 json。
+
+**版本解析（用户未写版本时）：** 扫描工作区全部 `pom.xml` → 仍无则 GitHub 最新 + 文档。
 
 ## 回答流程
 
@@ -45,17 +52,17 @@ description: >
 
 ### 2. 信息不足时，最多问 3 个
 
-1. easy-query 版本 + 数据库（mysql/pgsql/…）
-2. Spring Boot 还是手动 `EasyQueryBootstrapper`？
-3. 实体是否 `@EntityProxy` + `sql-processor`，还是 `@EntityFileProxy`/无接口模式？
+1. 工作区是否有 `pom.xml`（无则按 GitHub 最新）
+2. Spring Boot 2/3/4（`sql-springboot-starter` vs `sql-springboot4-starter`）
+3. 数据库类型
 
 ### 3. 输出顺序
 
 1. **结论**（1–3 句）
-2. **最短可用示例**（Spring Boot 注入 `EasyEntityQuery` 优先）
+2. **最短可用示例**（Spring Boot + `EasyEntityQuery` + `sql-springboot4-starter` / `sql-processor`）
 3. **2–5 条注意事项**
 
-默认中文，简洁直接，不用空话。
+默认中文，简洁直接。
 
 ## 核心 API 定位（必须区分）
 

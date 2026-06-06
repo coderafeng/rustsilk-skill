@@ -21,11 +21,24 @@ description: >
 
 ## Source Priority
 
-1. **mybatis-plus / mybatis-plus-join 源码与测试** — [baomidou/mybatis-plus](https://github.com/baomidou/mybatis-plus)、[yulichang/mybatis-plus-join](https://github.com/yulichang/mybatis-plus-join) 默认分支最新代码；用户未指定版本时以 GitHub 为准，并提醒与 Maven 依赖版本可能不一致
-2. **官方文档** — [baomidou.com](https://baomidou.com) / [mybatis-plus-join.github.io](https://mybatis-plus-join.github.io)
-3. 用户项目中的 `Mapper`、`Entity`、报错栈
+按**已解析版本**查证（版本：用户口述 → 工作区全部 pom → 无 pom 则 GitHub 最新）：
+
+1. **`vendor/<framework>/<version>/`**
+2. **`~/.m2/.../*-sources.jar`**
+3. **GitHub tag**（有具体版本时不用 main）
+4. **官方文档**
+
+版本不在 [vendor/versions.json](../../vendor/versions.json)：继续 2、3。
 
 ## 回答流程
+
+### 信息不足时，最多问 3 个
+
+1. 工作区是否有 `pom.xml`
+2. Spring Boot 2/3/4（starter artifactId）
+3. 数据库 / 报错栈
+
+**未写版本时：** 扫描工作区全部 `pom.xml`；空白项目用 GitHub 最新。
 
 ### 1. 分类问题
 

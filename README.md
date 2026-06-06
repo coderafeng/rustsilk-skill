@@ -12,8 +12,8 @@
 
 | Skill | 典型触发词 | 功能描述 |
 |-------|------------|----------|
-| `rustsilk-easy-query` | `eq`、`easy-query`、`selectAutoInclude`、`include`、`toSQLResult` | easy-query ORM：DSL、`EasyEntityQuery`、DTO/结构化返回、SQL 预览、`asTreeCTE`、代理/`@EntityProxy`/`sql-processor`、Spring Boot 配置与排错。 |
-| `rustsilk-mybatis-plus` | `MP`、`MPJ`、`baomidou`、`selectJoinList`、`MPJLambdaWrapper` | MyBatis-Plus + MPJ：Wrapper、分页、`MPJBaseMapper`、连表与 `selectCollection`、SQL 日志、starter/jsqlparser、连表 DTO 与排错。 |
+| `rustsilk-easy-query` | `eq`、`easy-query`、`EasyEntityQuery`、`easyEntityQuery`、`Navigate`、`selectAutoInclude`、`include`、`toSQLResult` | easy-query ORM：DSL、`EasyEntityQuery`、Navigate 导航、DTO/结构化返回、SQL 预览、`asTreeCTE`、代理/`@EntityProxy`/`sql-processor`、Spring Boot 配置与排错。 |
+| `rustsilk-mybatis-plus` | `mybatis`、`mybatis-plus`、`MP`、`MPJ`、`baomidou`、`selectJoinList`、`MPJLambdaWrapper` | MyBatis-Plus + MPJ：Wrapper、分页、`MPJBaseMapper`、连表与 `selectCollection`、SQL 日志、starter/jsqlparser、连表 DTO 与排错。 |
 
 > 源码目录：`rustsilk-skill-<主题>/`。新增 Skill 时创建对应子目录并追加一行。
 
@@ -21,8 +21,8 @@
 
 | 你的问题涉及… | 应触发的 Skill |
 |---------------|----------------|
-| easy-query / eq / `EasyEntityQuery` / 代理 APT | `rustsilk-easy-query` |
-| MyBatis-Plus / MPJ / `BaseMapper` / `MPJLambdaWrapper` | `rustsilk-mybatis-plus` |
+| easy-query / eq / `EasyEntityQuery` / `easyEntityQuery` / `Navigate` / 代理 APT | `rustsilk-easy-query` |
+| MyBatis / MyBatis-Plus / MPJ / `BaseMapper` / `MPJLambdaWrapper` | `rustsilk-mybatis-plus` |
 | 「JPA 和 MyBatis 哪个好」等框架选型对比 | **均不触发**（Skill 不覆盖 ORM 对比） |
 
 两个 Skill 可同时安装；Agent 会根据问题中的框架关键词自动选择。

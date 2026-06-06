@@ -2,11 +2,11 @@
 name: rustsilk-easy-query
 description: >
   easy-query (eq) ORM 专家 skill，面向中文 Java / Spring Boot 编码场景。
-  当用户询问 easy-query 的查询 DSL、selectAutoInclude、include、DTO 结构化返回、
-  toSQL/toSQLResult、JdbcExecutorListener、asTreeCTE、代理模式/@EntityProxy、
-  sql-processor、Spring Boot 配置 easy-query.database、编译/Proxy 未生成、
-  更新删除、子查询/any/groupJoin、IDEA 插件时使用。
-  即使用户只说「eq」「easy query」「dromara easy-query」也应触发。
+  当用户询问 easy-query 的查询 DSL、EasyEntityQuery/easyEntityQuery、selectAutoInclude、
+  include、Navigate 导航属性、DTO 结构化返回、toSQL/toSQLResult、JdbcExecutorListener、
+  asTreeCTE、代理模式/@EntityProxy、sql-processor、Spring Boot 配置 easy-query.database、
+  编译/Proxy 未生成、更新删除、子查询/any/groupJoin、IDEA 插件时使用。
+  即使用户只说「eq」「easy query」「easy-query」「EasyEntityQuery」「Navigate」「dromara easy-query」也应触发。
   不用于 JPA/Hibernate/MyBatis 对比或无关 ORM 讨论。
 ---
 

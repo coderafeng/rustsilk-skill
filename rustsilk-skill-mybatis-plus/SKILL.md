@@ -2,11 +2,12 @@
 name: rustsilk-mybatis-plus
 description: >
   MyBatis-Plus (MP) 与 MyBatis-Plus-Join (MPJ) 专家 skill，面向中文 Java / Spring Boot 编码场景。
-  当用户询问 BaseMapper/IService、LambdaQueryWrapper/Wrappers、分页 PaginationInnerInterceptor、
-  MPJBaseMapper、MPJLambdaWrapper/JoinWrappers、selectJoinList/selectJoinPage、
-  selectCollection/selectAssociation、连表 leftJoin、SQL 打印/p6spy/getSqlSegment、
-  @TableName/@TableLogic、Spring Boot starter 配置、MP 3.5 jsqlparser 依赖时使用。
-  即使用户只说「MP」「MPJ」「mybatis-plus-join」「baomidou」也应触发。
+  当用户询问 mybatis、mybatis-plus、BaseMapper/IService、LambdaQueryWrapper/Wrappers、
+  分页 PaginationInnerInterceptor、MPJBaseMapper、MPJLambdaWrapper/JoinWrappers、
+  selectJoinList/selectJoinPage、selectCollection/selectAssociation、连表 leftJoin、
+  SQL 打印/p6spy/getSqlSegment、@TableName/@TableLogic、Spring Boot starter 配置、
+  MP 3.5 jsqlparser 依赖时使用。
+  即使用户只说「mybatis」「mybatis-plus」「MP」「MPJ」「mybatis-plus-join」「baomidou」也应触发。
   不用于 JPA/Hibernate/easy-query 对比或无关 ORM 讨论。
 ---
 

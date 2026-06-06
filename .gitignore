@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# 安装脚本生成的 Cursor 项目级目录（源 Skill 在 rustsilk-skill-* 下）
+.cursor/
+
+# 临时文件
+*.log
+*.tmp
